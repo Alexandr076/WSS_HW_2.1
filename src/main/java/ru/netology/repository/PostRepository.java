@@ -5,12 +5,16 @@ import ru.netology.model.Post;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 // Stub
 public class PostRepository {
 
   public static PostRepository instance;
-  private final List<Post> db = new ArrayList<>();
+  private final ConcurrentHashMap<Integer, Post> db = new ConcurrentHashMap<>();
+  private final AtomicInteger postID = new AtomicInteger(0);
 
   public static synchronized PostRepository getInstance() {
     if (instance == null) {
@@ -19,40 +23,26 @@ public class PostRepository {
     return instance;
   }
 
-  public synchronized List<Post> all() {
-    return db;
+  public List<Post> all() {
+    return new ArrayList<>(db.values());
   }
 
-  public synchronized Post getById(int id) {
-    for (Post entity: db) {
-      if (entity.getId() == id) {
-        return entity;
-      }
-    }
-    throw new NotFoundException();
+  public Post getById(int id) {
+    return db.get(id);
   }
 
-  public synchronized void save(Post post) {
+  public void save(Post post) {
     if (post.getId() == 0) {
-      post.setId(db.size());
-      db.add(post);
+      post.setId(postID.get());
+      db.put(postID.get(), post);
+      postID.incrementAndGet();
       return;
     }
-    for (int i = 0; i < db.size(); i++) {
-      if (db.get(i).getId() == post.getId()) {
-        db.set(i, post);
-        return;
-      }
-    }
+    db.put(post.getId(), post);
   }
 
-  public synchronized void removeById(int id) {
-    for (int i = 0; i < db.size(); i++) {
-      if (db.get(i).getId() == id) {
-        db.remove(i);
-        return;
-      }
-    }
+  public void removeById(int id) {
+    db.remove(id);
   }
 
   private PostRepository() {

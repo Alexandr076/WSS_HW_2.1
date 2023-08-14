@@ -14,6 +14,8 @@ public class MainServlet extends HttpServlet {
   private static final String GET_METHOD = "GET";
   private static final String POST_METHOD = "POST";
   private static final String DELETE_METHOD = "DELETE";
+  private static final String PATH = "/api/posts";
+  private static final String PATH_WITH_REGEX = "/api/posts/\\d+";
 
   @Override
   public void init() {
@@ -29,22 +31,22 @@ public class MainServlet extends HttpServlet {
       final var method = req.getMethod();
 
       if (method.equals(GET_METHOD)) {
-        if (path.equals("/api/posts")) {
+        if (path.equals(PATH)) {
           controller.all(resp);
           return;
-        } else if (path.matches("/api/posts/\\d+")) {
+        } else if (path.matches(PATH_WITH_REGEX)) {
           final var id = Integer.parseInt(path.substring(path.lastIndexOf("/") + 1));
           controller.getById(id, resp);
           return;
         }
       }
 
-      if (method.equals(POST_METHOD) && path.equals("/api/posts")) {
+      if (method.equals(POST_METHOD) && (path.equals(PATH) || path.matches(PATH_WITH_REGEX))) {
         controller.save(req.getReader(), resp);
         return;
       }
 
-      if (method.equals(DELETE_METHOD) && path.matches("/api/posts/\\d+")) {
+      if (method.equals(DELETE_METHOD) && path.matches(PATH_WITH_REGEX)) {
         final var id = Integer.parseInt(path.substring(path.lastIndexOf("/") + 1));
         controller.removeById(id, resp);
         return;
