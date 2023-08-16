@@ -1,15 +1,14 @@
 package ru.netology.repository;
 
-import ru.netology.exception.NotFoundException;
+import org.springframework.stereotype.Repository;
 import ru.netology.model.Post;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-// Stub
+@Repository
 public class PostRepository {
 
   public static PostRepository instance;
