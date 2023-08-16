@@ -16,13 +16,6 @@ public class PostRepository {
   private final ConcurrentHashMap<Integer, Post> db = new ConcurrentHashMap<>();
   private final AtomicInteger postID = new AtomicInteger(0);
 
-  public static synchronized PostRepository getInstance() {
-    if (instance == null) {
-      instance = new PostRepository();
-    }
-    return instance;
-  }
-
   public List<Post> all() {
     return new ArrayList<>(db.values());
   }
@@ -45,6 +38,6 @@ public class PostRepository {
     db.remove(id);
   }
 
-  private PostRepository() {
+  public PostRepository() {
   }
 }
